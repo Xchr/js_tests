@@ -1,0 +1,53 @@
+<html>
+<script>
+function foo(x){
+var tmp = 3;
+return function(y){
+return (x+y+(++tmp));
+}
+}
+
+function offloadfoo(){
+var ws = new WebSocket('ws://192.168.101.142:4567');
+ws.onopen = function (e){
+console.log("Client connected to Server.");
+var func = foo.toString();//func1,
+var msg = { func : func,
+	    arg1 : 2,
+	    fnname : "foo",
+	    exe1 : 'var bar = foo(2);'};
+
+ws.send(JSON.stringify(msg));
+console.log("offloaded to server");
+e.preventDefault();
+};
+
+//Reieve Response
+ws.onmessage = function(ev){
+console.log("Response from server: "+ ev.data + (new Date()));
+var rst = JSON.parse(ev.data);
+console.log(rst);
+
+};
+
+}
+function bar10(){
+console.log(bar(10));
+alert(bar(100));
+}
+</script>
+<body>
+<h3>
+function foo(x){<br>
+var tmp = 3;<br>
+return function(y){<br>
+return (x+y+(++tmp));<br>
+}<br>
+}<br>
+</h3>
+<br><br>
+<button onclick="offloadfoo()">offload var bar = foo(2);</button>
+&nbsp&nbsp&nbsp&nbsp
+<button onclick="bar10()">bar(10);</button>
+</body>
+</html>
